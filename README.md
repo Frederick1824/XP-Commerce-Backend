@@ -1,0 +1,148 @@
+# XP Commerce Backend
+
+Backend de una plataforma de e-commerce desarrollado con **TypeScript**, orientado a un caso de uso real y construido aplicando prácticas de **Extreme Programming (XP)**.
+
+El proyecto busca resolver un flujo comercial concreto de forma simple, mantenible y verificable, priorizando historias de usuario, criterios de aceptación, pruebas automatizadas y una arquitectura clara por capas.
+
+## Objetivo
+
+Diseñar e implementar una API REST capaz de gestionar el núcleo de una experiencia de compra online, incluyendo catálogo de productos, carrito y generación de pedidos.
+
+La solución se plantea como una base reutilizable para un comercio real, evitando sobreingeniería y manteniendo el foco en funcionalidades que puedan evolucionar progresivamente.
+
+## Alcance inicial
+
+El MVP contempla las siguientes capacidades:
+
+- listar productos disponibles;
+- consultar el detalle de un producto;
+- agregar productos al carrito;
+- modificar cantidades dentro del carrito;
+- eliminar productos del carrito;
+- confirmar una compra y generar un pedido.
+
+## Enfoque XP
+
+El desarrollo sigue una dinámica incremental basada en prácticas de Extreme Programming:
+
+- **Historias de Usuario:** cada funcionalidad parte de una necesidad concreta del cliente.
+- **BDD con Cucumber:** los criterios de aceptación se traducen a escenarios Gherkin ejecutables.
+- **TDD/BDD:** primero se define el comportamiento esperado, luego se implementa la solución mínima necesaria para hacerlo pasar.
+- **Diseño simple:** se evita agregar complejidad que no sea requerida por el comportamiento actual.
+- **Refactorización continua:** una vez alcanzado el comportamiento esperado, se mejora el código sin alterar su resultado.
+- **Integración continua:** el proyecto incorporará un pipeline que valide compilación y pruebas automáticamente.
+
+## Arquitectura prevista
+
+La aplicación se organiza separando responsabilidades:
+
+```text
+Cliente HTTP
+    ↓
+Router / Controller
+    ↓
+Service
+    ↓
+Repository
+    ↓
+Persistencia
+```
+
+Esta separación permite modificar la estrategia de persistencia sin alterar la lógica de negocio ni los controladores.
+
+## Dominio principal
+
+El backend se organiza inicialmente alrededor de tres módulos:
+
+```text
+src/
+├── productos/
+├── carrito/
+└── pedidos/
+```
+
+### Productos
+
+Responsable del catálogo comercial, disponibilidad y consulta individual de cada producto.
+
+### Carrito
+
+Gestiona los productos seleccionados por el cliente y sus cantidades antes de confirmar la operación.
+
+### Pedidos
+
+Representa la confirmación final de una compra y concentra las validaciones necesarias para transformar un carrito en un pedido.
+
+## Tecnologías previstas
+
+- Node.js
+- TypeScript
+- Express
+- Cucumber
+- Gherkin
+- GitHub Actions
+
+La persistencia se mantendrá desacoplada de la lógica de negocio para permitir una evolución posterior hacia una base de datos real mediante un ORM si el proyecto lo requiere.
+
+## Estructura esperada
+
+```text
+XP-Commerce-Backend/
+├── features/
+│   ├── productos/
+│   ├── carrito/
+│   └── pedidos/
+├── src/
+│   ├── productos/
+│   ├── carrito/
+│   ├── pedidos/
+│   ├── shared/
+│   ├── app.ts
+│   └── server.ts
+├── tests/
+│   └── step_definitions/
+├── .github/
+│   └── workflows/
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+## Historias funcionales iniciales
+
+1. Como cliente, quiero ver el catálogo de productos para conocer las opciones disponibles.
+2. Como cliente, quiero consultar el detalle de un producto para conocer su precio, descripción y disponibilidad.
+3. Como cliente, quiero agregar un producto al carrito para preparar mi compra.
+4. Como cliente, quiero modificar la cantidad de un producto del carrito para ajustar mi pedido.
+5. Como cliente, quiero eliminar un producto del carrito para corregir mi compra.
+6. Como cliente, quiero confirmar mi carrito para generar un pedido.
+
+Cada historia contará con criterios de aceptación y escenarios BDD que contemplen tanto el camino esperado como casos de error o límite.
+
+## Flujo de trabajo
+
+El equipo trabajará sobre una base común y luego dividirá la implementación por módulos e historias de usuario.
+
+Cada funcionalidad seguirá este ciclo:
+
+```text
+Historia de Usuario
+       ↓
+Criterios de Aceptación
+       ↓
+Escenario Gherkin
+       ↓
+Prueba en rojo
+       ↓
+Implementación mínima
+       ↓
+Prueba en verde
+       ↓
+Refactorización
+```
+
+## Estado
+
+🚧 Proyecto en desarrollo.
+
+La primera etapa consiste en definir el backlog, los criterios de aceptación y los escenarios BDD antes de implementar la lógica de producción.
