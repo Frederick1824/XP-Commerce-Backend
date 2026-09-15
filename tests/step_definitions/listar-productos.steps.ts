@@ -1,31 +1,46 @@
 import { Given, When, Then } from "@cucumber/cucumber";
 import assert from "node:assert/strict";
+import request from "supertest";
+import { app } from "../../src/app.js";
 
-let estadoRespuesta = 0;
-let cuerpoRespuesta: unknown = null;
+type Respuesta = {
+  status: number;
+  body: unknown;
+};
+
+let respuesta: Respuesta = { status: 0, body: null };
 
 Given("que existen productos disponibles en el catálogo", function () {
-  // El catálogo se preparará cuando exista el repositorio en memoria.
+  // El repositorio en memoria ya incluye productos de prueba.
 });
 
 When("consulto el catálogo de productos", async function () {
-  throw new Error("FASE RED: HU1 todavía no tiene implementación de producción");
+  const res = await request(app).get("/api/v1/productos");
+  respuesta = { status: res.status, body: res.body };
 });
 
-When("consulto el catálogo con page igual a 0", async function () {
-  throw new Error("FASE RED: falta implementar la validación de paginación de HU1");
+When("consulto el catálogo con page igual a {int}", async function (page: number) {
+  const res = await request(app).get(`/api/v1/productos?page=${page}`);
+  respuesta = { status: res.status, body: res.body };
 });
 
 Then("la respuesta debe tener estado {int}", function (estadoEsperado: number) {
-  assert.equal(estadoRespuesta, estadoEsperado);
+  assert.equal(respuesta.status, estadoEsperado);
 });
 
 Then("debe devolver una lista de productos con id, nombre, precio y stock", function () {
-  assert.ok(Array.isArray(cuerpoRespuesta));
+  const cuerpo = respuesta.body as { data?: unknown[] };
+  assert.ok(Array.isArray(cuerpo.data));
+  assert.ok(cuerpo.data.length > 0);
+
+  const producto = cuerpo.data[0] as Record<string, unknown>;
+  assert.ok("id" in producto);
+  assert.ok("nombre" in producto);
+  assert.ok("precio" in producto);
+  assert.ok("stock" in producto);
 });
 
 Then("debe devolver el código de error {string}", function (codigoEsperado: string) {
-  assert.ok(cuerpoRespuesta && typeof cuerpoRespuesta === "object");
-  const respuesta = cuerpoRespuesta as { error?: { code?: string } };
-  assert.equal(respuesta.error?.code, codigoEsperado);
+  const cuerpo = respuesta.body as { error?: { code?: string } };
+  assert.equal(cuerpo.error?.code, codigoEsperado);
 });
