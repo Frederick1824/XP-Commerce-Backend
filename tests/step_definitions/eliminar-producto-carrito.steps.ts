@@ -4,8 +4,8 @@ import assert from 'node:assert/strict';
 let estadoRespuesta = 0;
 let cuerpoRespuesta: unknown = null;
 
-Given('que existe un usuario registrado con id {int}', function () {
-  // El modulo de usuarios no se modela en este alcance.
+Given('que existe un cliente con id {int}', function () {
+  // El modulo de clientes no se modela en este alcance.
   // El paso expresa el contexto del negocio.
 });
 
@@ -17,14 +17,14 @@ Given(
 );
 
 Given(
-  'el usuario {int} ya tiene el producto {int} con cantidad {int} en su carrito',
+  'el cliente {int} ya tiene el producto {int} con cantidad {int} en su carrito',
   function () {
     // El carrito se preparara cuando exista el servicio de carrito.
   }
 );
 
 Given(
-  'el usuario {int} elimino el producto {int} de su carrito',
+  'el cliente {int} elimino el producto {int} de su carrito',
   function () {
     // Paso auxiliar para preparar el estado del carrito antes del When.
     // Se implementara cuando exista el servicio de carrito.
@@ -32,7 +32,7 @@ Given(
 );
 
 When(
-  'el usuario {int} elimina el producto {int} de su carrito',
+  'el cliente {int} elimina el producto {int} de su carrito',
   async function () {
     throw new Error('FASE RED: HU5 no tiene implementacion de produccion');
   }
@@ -46,21 +46,21 @@ Then(
 );
 
 Then(
-  'el carrito del usuario {int} no debe contener el producto {int}',
+  'el carrito del cliente {int} no debe contener el producto {int}',
   function () {
     assert.ok(cuerpoRespuesta && typeof cuerpoRespuesta === 'object');
   }
 );
 
 Then(
-  'el carrito del usuario {int} debe estar vacio',
+  'el carrito del cliente {int} debe estar vacio',
   function () {
     assert.ok(cuerpoRespuesta && typeof cuerpoRespuesta === 'object');
   }
 );
 
 Then(
-  'el total del carrito del usuario {int} debe ser {int}',
+  'el total del carrito del cliente {int} debe ser {int}',
   function (totalEsperado: number) {
     assert.ok(cuerpoRespuesta && typeof cuerpoRespuesta === 'object');
     const respuesta = cuerpoRespuesta as { data?: { total?: number } };

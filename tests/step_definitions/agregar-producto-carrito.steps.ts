@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 let estadoRespuesta = 0;
 let cuerpoRespuesta: unknown = null;
 
-Given('que existe un usuario registrado con id {int}', function () {
+Given('que existe un cliente con id {int}', function () {
 });
 
 Given(
@@ -14,13 +14,13 @@ Given(
 );
 
 Given(
-  'el usuario {int} ya tiene el producto {int} con cantidad {int} en su carrito',
+  'el cliente {int} ya tiene el producto {int} con cantidad {int} en su carrito',
   function () {
   }
 );
 
 When(
-  'el usuario {int} agrega el producto {int} con cantidad {int} a su carrito',
+  'el cliente {int} agrega el producto {int} con cantidad {int} a su carrito',
   async function () {
     throw new Error('FASE RED: HU3 no tiene implementacion de produccion');
   }
@@ -34,14 +34,14 @@ Then(
 );
 
 Then(
-  'el carrito del usuario {int} debe contener el producto {int} con cantidad {int}',
+  'el carrito del cliente {int} debe contener el producto {int} con cantidad {int}',
   function () {
     assert.ok(cuerpoRespuesta && typeof cuerpoRespuesta === 'object');
   }
 );
 
 Then(
-  'el total del carrito del usuario {int} debe ser {int}',
+  'el total del carrito del cliente {int} debe ser {int}',
   function (totalEsperado: number) {
     assert.ok(cuerpoRespuesta && typeof cuerpoRespuesta === 'object');
     const respuesta = cuerpoRespuesta as { data?: { total?: number } };
