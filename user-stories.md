@@ -55,13 +55,13 @@
 
 ### HU3 · Agregar producto al carrito
 
-> - **Como** cliente registrado
+> - **Como** cliente
 > - **Quiero** agregar un producto a mi carrito
 > - **Para** comprarlo más tarde.
 
 **Criterios de aceptación:**
 
-1. `POST /api/v1/carrito/:usuarioId/items` con `{ productoId, cantidad }` válidos devuelve `201` y el carrito con el ítem agregado; si el ítem ya existía, incrementa la cantidad y devuelve `200`.
+1. `POST /api/v1/carrito/:clienteId/items` con `{ productoId, cantidad }` válidos devuelve `201` y el carrito con el ítem agregado; si el ítem ya existía, incrementa la cantidad y devuelve `200`.
 2. Devuelve `404 PRODUCT_NOT_FOUND` si el producto no existe y `422 INSUFFICIENT_STOCK` si `cantidad > stock` disponible.
 3. Devuelve `422 INVALID_QUANTITY` si `cantidad` no es un entero positivo; el `total` del carrito se recalcula en cada operación.
 
@@ -72,13 +72,13 @@
 
 ### HU4 · Modificar cantidad de un producto del carrito
 
-> - **Como** cliente registrado
+> - **Como** cliente
 > - **Quiero** modificar la cantidad de un producto en mi carrito
 > - **Para** ajustar mi pedido antes de confirmarlo.
 
 **Criterios de aceptación:**
 
-1. `PATCH /api/v1/carrito/:usuarioId/items/:productoId` con `{ cantidad }` válida devuelve `200` y el `subtotal` del ítem y el `total` del carrito actualizados.
+1. `PATCH /api/v1/carrito/:clienteId/items/:productoId` con `{ cantidad }` válida devuelve `200` y el `subtotal` del ítem y el `total` del carrito actualizados.
 2. Devuelve `422 INSUFFICIENT_STOCK` si la nueva cantidad supera el stock y `422 INVALID_QUANTITY` si es cero o negativa.
 3. Devuelve `404 ITEM_NOT_FOUND` si el producto no está en el carrito.
 
@@ -89,13 +89,13 @@
 
 ### HU5 · Eliminar producto del carrito
 
-> - **Como** cliente registrado
+> - **Como** cliente
 > - **Quiero** eliminar un producto de mi carrito
 > - **Para** quitar lo que ya no deseo comprar.
 
 **Criterios de aceptación:**
 
-1. `DELETE /api/v1/carrito/:usuarioId/items/:productoId` devuelve `204` sin cuerpo si el ítem existe y se elimina correctamente.
+1. `DELETE /api/v1/carrito/:clienteId/items/:productoId` devuelve `204` sin cuerpo si el ítem existe y se elimina correctamente.
 2. El `total` del carrito se recalcula; si era el último ítem, el carrito queda con `items: []` y `total: 0`.
 3. Devuelve `404 ITEM_NOT_FOUND` si el producto no está en el carrito.
 
@@ -155,8 +155,6 @@
 **Responsable:** Lautaro
 **Depende de:** HT1
 
-
-
 ---
 
 ## 3. Resumen del Product Backlog
@@ -214,9 +212,9 @@ Una historia se considera terminada cuando:
 | --- | --- | --- | --- | --- |
 | GET | `/api/v1/productos` | HU1 | 200 | 400 |
 | GET | `/api/v1/productos/:id` | HU2 | 200 | 400, 404 |
-| POST | `/api/v1/carrito/:usuarioId/items` | HU3 | 201 / 200 | 404, 422 |
-| PATCH | `/api/v1/carrito/:usuarioId/items/:productoId` | HU4 | 200 | 404, 422 |
-| DELETE | `/api/v1/carrito/:usuarioId/items/:productoId` | HU5 | 204 | 404 |
+| POST | `/api/v1/carrito/:clienteId/items` | HU3 | 201 / 200 | 404, 422 |
+| PATCH | `/api/v1/carrito/:clienteId/items/:productoId` | HU4 | 200 | 404, 422 |
+| DELETE | `/api/v1/carrito/:clienteId/items/:productoId` | HU5 | 204 | 404 |
 | POST | `/api/v1/pedidos` | HU6 | 201 | 404, 422 |
 
 ### Formato uniforme de error
