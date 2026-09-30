@@ -9,6 +9,7 @@ export function crearCarritoRouter(service: CarritoService): Router {
   router.get('/:clienteId', controller.obtener);
   router.post('/:clienteId/items', controller.agregarItem);
   router.patch('/:clienteId/items/:productoId', controller.modificarCantidad);
+  router.delete('/:clienteId/items/:productoId', controller.eliminarItem);
 
   return router;
 }
