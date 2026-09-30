@@ -51,4 +51,38 @@ export class CarritoController {
 
     return { productoId, cantidad };
   }
+
+  modificarCantidad = (request: Request, response: Response): void => {
+    const clienteId = parsePositiveInt(request.params.clienteId, 'clienteId');
+    const productoId = parsePositiveInt(request.params.productoId, 'productoId');
+    const cantidad = this.validarCantidad(request.body);
+    
+    const carrito = this.carritoService.modificarCantidad(
+      clienteId,
+      productoId,
+      cantidad
+    );
+    response.status(200).json({ data: carrito });
+  };
+  
+  private validarCantidad(body: unknown): number {
+    if (typeof body !== 'object' || body === null) {
+      throw new AppError(400, 'INVALID_BODY', 'El cuerpo debe ser un objeto JSON');
+    }
+    const obj = body as Record<string, unknown>;
+    const cantidad = obj.cantidad;
+  
+    if (
+      typeof cantidad !== 'number' ||
+      !Number.isInteger(cantidad) ||
+      cantidad <= 0
+    ) {
+      throw new AppError(
+        422,
+        'INVALID_QUANTITY',
+        'La cantidad debe ser un entero positivo'
+      );
+    }
+    return cantidad;
+  }
 }
