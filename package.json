@@ -10,7 +10,8 @@
     "test:bdd": "node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --import tests/support/**/*.ts --import tests/step_definitions/**/*.ts features/**/*.feature",
     "test:bdd:hu1": "node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --import tests/support/**/*.ts --import tests/step_definitions/**/*.ts features/productos/listar-productos.feature",
     "test:bdd:hu3": "node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --import tests/support/**/*.ts --import tests/step_definitions/**/*.ts features/carrito/agregar-producto.feature",
-    "test:bdd:hu4": "node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --import tests/support/**/*.ts --import tests/step_definitions/**/*.ts features/carrito/modificar-cantidad.feature"
+    "test:bdd:hu4": "node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --import tests/support/**/*.ts --import tests/step_definitions/**/*.ts features/carrito/modificar-cantidad.feature",
+    "test:bdd:hu5": "node --import tsx ./node_modules/@cucumber/cucumber/bin/cucumber.js --import tests/support/**/*.ts --import tests/step_definitions/**/*.ts features/carrito/eliminar-producto.feature"
   },
   "dependencies": {
     "express": "^5.1.0"

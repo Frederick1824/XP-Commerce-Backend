@@ -107,6 +107,26 @@ export class CarritoService {
     return this.carritoRepository.guardar(carrito);
   }
 
+  eliminarItem(clienteId: number, productoId: number): void {
+    const carrito = this.carritoRepository.buscarPorCliente(clienteId);
+    if (!carrito) {
+      throw new AppError(404, 'CART_NOT_FOUND', 'El carrito no existe');
+    }
+  
+    const index = carrito.items.findIndex((i) => i.productoId === productoId);
+    if (index === -1) {
+      throw new AppError(
+        404,
+        'ITEM_NOT_FOUND',
+        'El producto no esta en el carrito'
+      );
+    }
+  
+    carrito.items.splice(index, 1);
+    this.recalcularTotal(carrito);
+    this.carritoRepository.guardar(carrito);
+  }
+
   private validarCantidad(cantidad: number): void {
     if (!Number.isInteger(cantidad) || cantidad <= 0) {
       throw new AppError(
