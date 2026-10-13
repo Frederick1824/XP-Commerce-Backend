@@ -81,3 +81,22 @@ Then(
     );
   }
 );
+
+Then(
+  'el carrito del cliente {int} no debe contener el producto {int}',
+  async function (this: CustomWorld, clienteId: number, productoId: number) {
+    const response = await request(this.app).get(`/api/v1/carrito/${clienteId}`);
+    const item = response.body.data.items.find(
+      (i: { productoId: number }) => i.productoId === productoId
+    );
+    assert.equal(item, undefined);
+  }
+);
+
+Then(
+  'el carrito del cliente {int} debe estar vacio',
+  async function (this: CustomWorld, clienteId: number) {
+    const response = await request(this.app).get(`/api/v1/carrito/${clienteId}`);
+    assert.equal(response.body.data.items.length, 0);
+  }
+);

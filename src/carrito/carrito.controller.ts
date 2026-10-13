@@ -85,4 +85,12 @@ export class CarritoController {
     }
     return cantidad;
   }
+
+  eliminarItem = (request: Request, response: Response): void => {
+    const clienteId = parsePositiveInt(request.params.clienteId, 'clienteId');
+    const productoId = parsePositiveInt(request.params.productoId, 'productoId');
+    
+    this.carritoService.eliminarItem(clienteId, productoId);
+    response.status(204).send();
+  };
 }
