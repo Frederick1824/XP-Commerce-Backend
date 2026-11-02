@@ -21,6 +21,7 @@ export type RegisterDto = {
   nombre: string;
   email: string;
   password: string;
+  role?: Role;
 };
 
 export type LoginDto = {
