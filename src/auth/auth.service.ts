@@ -1,5 +1,5 @@
 import bcrypt from 'bcrypt';
-import jwt from 'jsonwebtoken';
+import jwt, { type JwtPayload } from 'jsonwebtoken';
 import { AppError } from '../shared/errors/app-error.js';
 import type { AuthRepository } from './auth.repository.js';
 import type {
@@ -68,17 +68,12 @@ export class AuthService {
   }
 
   refresh(token: string): { accessToken: string } {
-    let payload: AuthTokenPayload;
-
-    try {
-      payload = jwt.verify(token, this.getRefreshSecret()) as AuthTokenPayload;
-    } catch {
-      throw new AppError(
-        403,
-        'INVALID_REFRESH_TOKEN',
-        'Refresh token invalido o expirado'
-      );
-    }
+    const payload = this.verifyTokenPayload(
+      token,
+      this.getRefreshSecret(),
+      'INVALID_REFRESH_TOKEN',
+      'Refresh token invalido o expirado'
+    );
 
     const usuario = this.repository.buscarPorId(payload.sub);
 
@@ -100,19 +95,46 @@ export class AuthService {
   }
 
   verifyAccessToken(token: string): AuthTokenPayload {
-    try {
-      return jwt.verify(token, this.getAccessSecret()) as AuthTokenPayload;
-    } catch {
-      throw new AppError(
-        403,
-        'INVALID_ACCESS_TOKEN',
-        'Token invalido o expirado'
-      );
-    }
+    return this.verifyTokenPayload(
+      token,
+      this.getAccessSecret(),
+      'INVALID_ACCESS_TOKEN',
+      'Token invalido o expirado'
+    );
   }
 
   listarUsuarios(): UsuarioPublico[] {
     return this.repository.listarPublicos();
+  }
+
+  private verifyTokenPayload(
+    token: string,
+    secret: string,
+    errorCode: string,
+    errorMessage: string
+  ): AuthTokenPayload {
+    let decoded: string | JwtPayload;
+
+    try {
+      decoded = jwt.verify(token, secret);
+    } catch {
+      throw new AppError(403, errorCode, errorMessage);
+    }
+
+    if (
+      typeof decoded === 'string' ||
+      typeof decoded.sub !== 'number' ||
+      typeof decoded.email !== 'string' ||
+      (decoded.role !== 'USER' && decoded.role !== 'ADMIN')
+    ) {
+      throw new AppError(403, errorCode, errorMessage);
+    }
+
+    return {
+      sub: decoded.sub,
+      email: decoded.email,
+      role: decoded.role
+    };
   }
 
   private getAccessSecret(): string {
