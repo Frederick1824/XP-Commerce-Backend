@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import { buildDependencies, createApp } from './app.js';
 
 const PORT = Number(process.env.PORT) || 3000;
