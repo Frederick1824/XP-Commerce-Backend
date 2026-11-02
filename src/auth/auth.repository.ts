@@ -1,8 +1,25 @@
-import type { Role, Usuario, UsuarioPublico } from './auth.types.js';
+import bcrypt from 'bcrypt';
+import type { Usuario, UsuarioPublico } from './auth.types.js';
 
 export class AuthRepository {
   private readonly usuarios: Usuario[] = [];
   private nextId = 1;
+
+  constructor() {
+    const adminEmail = process.env.DEMO_ADMIN_EMAIL;
+    const adminPassword = process.env.DEMO_ADMIN_PASSWORD;
+
+    if (adminEmail && adminPassword) {
+      this.usuarios.push({
+        id: this.nextId++,
+        nombre: 'Administrador Demo',
+        email: adminEmail.toLowerCase(),
+        passwordHash: bcrypt.hashSync(adminPassword, 12),
+        role: 'ADMIN',
+        refreshToken: null
+      });
+    }
+  }
 
   buscarPorEmail(email: string): Usuario | undefined {
     return this.usuarios.find((usuario) => usuario.email === email);
@@ -16,16 +33,16 @@ export class AuthRepository {
     nombre: string;
     email: string;
     passwordHash: string;
-    role?: Role;
   }): Usuario {
     const usuario: Usuario = {
       id: this.nextId++,
       nombre: datos.nombre,
       email: datos.email,
       passwordHash: datos.passwordHash,
-      role: datos.role ?? 'USER',
+      role: 'USER',
       refreshToken: null
     };
+
     this.usuarios.push(usuario);
     return usuario;
   }
@@ -36,6 +53,9 @@ export class AuthRepository {
   }
 
   listarPublicos(): UsuarioPublico[] {
-    return this.usuarios.map(({ passwordHash: _p, refreshToken: _r, ...usuario }) => usuario);
+    return this.usuarios.map(
+      ({ passwordHash: _passwordHash, refreshToken: _refreshToken, ...usuario }) =>
+        usuario
+    );
   }
 }

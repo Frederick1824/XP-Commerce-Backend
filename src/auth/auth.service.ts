@@ -2,7 +2,12 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../shared/errors/app-error.js';
 import type { AuthRepository } from './auth.repository.js';
-import type { AuthTokenPayload, LoginDto, RegisterDto, UsuarioPublico } from './auth.types.js';
+import type {
+  AuthTokenPayload,
+  LoginDto,
+  RegisterDto,
+  UsuarioPublico
+} from './auth.types.js';
 
 export class AuthService {
   constructor(private readonly repository: AuthRepository) {}
@@ -16,8 +21,7 @@ export class AuthService {
     const usuario = this.repository.crear({
       nombre: dto.nombre,
       email: dto.email,
-      passwordHash,
-      role: dto.role
+      passwordHash
     });
 
     return {
@@ -30,6 +34,7 @@ export class AuthService {
 
   async login(dto: LoginDto) {
     const usuario = this.repository.buscarPorEmail(dto.email);
+
     if (!usuario || !(await bcrypt.compare(dto.password, usuario.passwordHash))) {
       throw new AppError(401, 'INVALID_CREDENTIALS', 'Credenciales invalidas');
     }
@@ -40,8 +45,13 @@ export class AuthService {
       role: usuario.role
     };
 
-    const accessToken = jwt.sign(payload, this.getAccessSecret(), { expiresIn: '15m' });
-    const refreshToken = jwt.sign(payload, this.getRefreshSecret(), { expiresIn: '7d' });
+    const accessToken = jwt.sign(payload, this.getAccessSecret(), {
+      expiresIn: '15m'
+    });
+
+    const refreshToken = jwt.sign(payload, this.getRefreshSecret(), {
+      expiresIn: '7d'
+    });
 
     this.repository.guardarRefreshToken(usuario.id, refreshToken);
 
@@ -63,28 +73,41 @@ export class AuthService {
     try {
       payload = jwt.verify(token, this.getRefreshSecret()) as AuthTokenPayload;
     } catch {
-      throw new AppError(403, 'INVALID_REFRESH_TOKEN', 'Refresh token invalido o expirado');
+      throw new AppError(
+        403,
+        'INVALID_REFRESH_TOKEN',
+        'Refresh token invalido o expirado'
+      );
     }
 
     const usuario = this.repository.buscarPorId(payload.sub);
+
     if (!usuario || usuario.refreshToken !== token) {
-      throw new AppError(403, 'INVALID_REFRESH_TOKEN', 'Refresh token revocado o invalido');
+      throw new AppError(
+        403,
+        'INVALID_REFRESH_TOKEN',
+        'Refresh token revocado o invalido'
+      );
     }
 
-    const accessToken = jwt.sign(
-      { sub: usuario.id, email: usuario.email, role: usuario.role },
-      this.getAccessSecret(),
-      { expiresIn: '15m' }
-    );
-
-    return { accessToken };
+    return {
+      accessToken: jwt.sign(
+        { sub: usuario.id, email: usuario.email, role: usuario.role },
+        this.getAccessSecret(),
+        { expiresIn: '15m' }
+      )
+    };
   }
 
   verifyAccessToken(token: string): AuthTokenPayload {
     try {
       return jwt.verify(token, this.getAccessSecret()) as AuthTokenPayload;
     } catch {
-      throw new AppError(403, 'INVALID_ACCESS_TOKEN', 'Token invalido o expirado');
+      throw new AppError(
+        403,
+        'INVALID_ACCESS_TOKEN',
+        'Token invalido o expirado'
+      );
     }
   }
 
@@ -94,13 +117,17 @@ export class AuthService {
 
   private getAccessSecret(): string {
     const value = process.env.JWT_ACCESS_SECRET;
-    if (!value) throw new AppError(500, 'AUTH_CONFIG_ERROR', 'Falta JWT_ACCESS_SECRET');
+    if (!value) {
+      throw new AppError(500, 'AUTH_CONFIG_ERROR', 'Falta JWT_ACCESS_SECRET');
+    }
     return value;
   }
 
   private getRefreshSecret(): string {
     const value = process.env.JWT_REFRESH_SECRET;
-    if (!value) throw new AppError(500, 'AUTH_CONFIG_ERROR', 'Falta JWT_REFRESH_SECRET');
+    if (!value) {
+      throw new AppError(500, 'AUTH_CONFIG_ERROR', 'Falta JWT_REFRESH_SECRET');
+    }
     return value;
   }
 }
