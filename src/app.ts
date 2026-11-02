@@ -1,6 +1,8 @@
 import express, { type Express } from 'express';
 import cors from 'cors';
 import { ProductosRepository } from './productos/productos.repository.js';
+import { ProductosService } from './productos/productos.service.js';
+import { crearProductosRouter } from './productos/productos.routes.js';
 import { CarritoRepository } from './carrito/carrito.repository.js';
 import { CarritoService } from './carrito/carrito.service.js';
 import { crearCarritoRouter } from './carrito/carrito.routes.js';
@@ -14,6 +16,7 @@ import { notFound } from './shared/middlewares/not-found.js';
 
 export type AppDependencies = {
   productosRepository: ProductosRepository;
+  productosService: ProductosService;
   carritoRepository: CarritoRepository;
   carritoService: CarritoService;
   authRepository: AuthRepository;
@@ -22,6 +25,8 @@ export type AppDependencies = {
 
 export function buildDependencies(): AppDependencies {
   const productosRepository = new ProductosRepository();
+  const productosService = new ProductosService(productosRepository);
+
   const carritoRepository = new CarritoRepository();
   const carritoService = new CarritoService(
     carritoRepository,
@@ -33,6 +38,7 @@ export function buildDependencies(): AppDependencies {
 
   return {
     productosRepository,
+    productosService,
     carritoRepository,
     carritoService,
     authRepository,
@@ -55,11 +61,22 @@ export function createApp(deps: AppDependencies): Express {
 
   app.use('/api/auth', crearAuthRouter(deps.authService));
 
-  app.use('/api/v1/carrito', crearCarritoRouter(deps.carritoService));
+  app.use(
+    '/api/v1/productos',
+    crearProductosRouter(deps.productosService)
+  );
+
+  app.use(
+    '/api/v1/carrito',
+    crearCarritoRouter(deps.carritoService)
+  );
 
   app.use(
     '/api/v1/secure/carrito',
-    crearCarritoSeguroRouter(deps.carritoService, deps.authService)
+    crearCarritoSeguroRouter(
+      deps.carritoService,
+      deps.authService
+    )
   );
 
   app.use(notFound);
