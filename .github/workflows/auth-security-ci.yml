@@ -1,0 +1,32 @@
+name: auth-security-ci
+
+on:
+  push:
+    branches:
+      - auth-seguridad
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    env:
+      JWT_ACCESS_SECRET: ci-access-secret-for-tests
+      JWT_REFRESH_SECRET: ci-refresh-secret-for-tests
+      CORS_ORIGINS: http://localhost:5173
+      DEMO_ADMIN_EMAIL: admin@demo.local
+      DEMO_ADMIN_PASSWORD: Admin123!
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Install dependencies
+        run: npm install
+      - name: Build
+        run: npm run build
+      - name: BDD tests
+        run: npm run test:bdd
